@@ -605,54 +605,154 @@ function movementGuide(type, machineName) {
   return `
     <div class="movementGuide" aria-hidden="true">
       <strong>${machineName}</strong>
-      <svg viewBox="0 0 220 132" role="img">
-        <line x1="22" y1="108" x2="198" y2="108"></line>
-        <circle cx="58" cy="38" r="14"></circle>
-        <line x1="58" y1="52" x2="58" y2="86"></line>
-        <line x1="58" y1="86" x2="40" y2="108"></line>
-        <line x1="58" y1="86" x2="80" y2="108"></line>
-        <path d="${guidePath(type)}"></path>
-        <circle class="handle" cx="${handlePoint(type)[0]}" cy="${handlePoint(type)[1]}" r="7"></circle>
-        <path class="arrow" d="${arrowPath(type)}"></path>
-      </svg>
+      ${diagramSvg(type, machineName)}
       <div><span>${start}</span><span>${finish}</span></div>
     </div>
   `;
 }
 
-function guidePath(type) {
-  if (type === "leg") return "M88 86 L150 62 L190 62";
-  if (type === "row") return "M58 62 C90 62 112 62 142 62";
-  if (type === "hinge") return "M58 70 C82 88 112 94 144 94";
-  if (type === "lunge") return "M58 86 C88 82 112 92 142 108";
-  if (type === "rotate") return "M58 66 C92 42 128 42 160 66";
-  if (type === "raise") return "M58 62 C82 42 104 34 132 30";
-  if (type === "pressdown") return "M58 58 C82 66 104 78 130 96";
-  if (type === "curl") return "M58 88 C78 72 96 58 116 44";
-  if (type === "face") return "M58 46 C84 42 106 40 132 38";
-  if (type === "core") return "M58 64 L138 64";
-  return "M58 66 C88 58 116 58 144 66";
+function diagramSvg(type, machineName) {
+  const lowerMachine = machineName.toLowerCase();
+  const svg = lowerMachine.includes("leg press")
+    ? legPressDiagram()
+    : lowerMachine.includes("multi-press")
+      ? pressDiagram(type)
+      : lowerMachine.includes("row / pull")
+        ? rowDiagram(type)
+        : cableDiagram(type);
+  return addSvgPaint(svg);
 }
 
-function arrowPath(type) {
-  if (type === "leg") return "M146 62 L176 62 M166 54 L176 62 L166 70";
-  if (type === "row") return "M142 62 L102 62 M112 54 L102 62 L112 70";
-  if (type === "pressdown") return "M124 76 L132 98 M122 91 L132 98 L136 85";
-  if (type === "curl") return "M102 58 L118 42 M105 42 L118 42 L116 56";
-  if (type === "hinge") return "M80 88 L110 94 M100 86 L110 94 L98 100";
-  if (type === "rotate") return "M118 42 L152 58 M144 46 L152 58 L138 60";
-  return "M104 58 L136 58 M126 50 L136 58 L126 66";
+function addSvgPaint(svg) {
+  return svg
+    .replace('<style>', '<rect x="8" y="8" width="264" height="146" rx="8" fill="#f5f7f7" stroke="#e0e5e7" stroke-width="1" /><style>')
+    .replaceAll('class="machine"', 'class="machine" fill="none" stroke="#687176" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"')
+    .replaceAll('class="person"', 'class="person" fill="none" stroke="#2f363a" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"')
+    .replaceAll('class="pad"', 'class="pad" fill="#ffffff" stroke="#687176" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"')
+    .replaceAll('class="handle"', 'class="handle" fill="#2f363a" stroke="#2f363a" stroke-width="3"')
+    .replaceAll('class="arrow"', 'class="arrow" fill="none" stroke="#6faa1f" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"');
 }
 
-function handlePoint(type) {
-  if (type === "leg") return [190, 62];
-  if (type === "hinge") return [144, 94];
-  if (type === "lunge") return [142, 108];
-  if (type === "raise") return [132, 30];
-  if (type === "pressdown") return [130, 96];
-  if (type === "curl") return [116, 44];
-  if (type === "face") return [132, 38];
-  return [142, 62];
+function pressDiagram(type) {
+  const arrow = type === "pressdown" ? arrowDown(178, 70, 178, 112) : arrowLine(150, 74, 212, 56);
+  return `
+    <svg class="machineDiagram" viewBox="0 0 280 170" role="img">
+      ${diagramStyles()}
+      <path class="machine" d="M34 148 H238 M58 148 V84 M58 84 H104 M104 84 L126 136 M126 136 H170 M190 148 V28 M190 28 H226 M190 60 L236 44 M190 60 L222 86 M226 28 V148" />
+      <path class="pad" d="M70 112 L112 72 L128 86 L92 128 Z M72 136 H130" />
+      <circle class="person" cx="104" cy="62" r="12" />
+      <path class="person" d="M102 74 L118 96 L142 96 M116 96 L98 126 M98 126 L78 146 M116 100 L134 130 M134 130 L158 146" />
+      <path class="person" d="M122 86 L156 74 L178 60" />
+      <circle class="handle" cx="178" cy="60" r="5" />
+      ${arrow}
+    </svg>
+  `;
+}
+
+function legPressDiagram() {
+  return `
+    <svg class="machineDiagram" viewBox="0 0 280 170" role="img">
+      ${diagramStyles()}
+      <path class="machine" d="M32 148 H246 M54 148 V110 M54 110 H104 M104 110 L132 148 M194 148 V42 M194 42 H226 M194 42 L238 116 M238 116 V148" />
+      <path class="pad" d="M72 120 L126 78 L144 94 L96 138 Z" />
+      <path class="machine" d="M206 72 L250 96 M206 112 L250 136" />
+      <circle class="person" cx="118" cy="70" r="12" />
+      <path class="person" d="M116 82 L130 104 L154 110 M154 110 L206 92 M154 116 L206 126 M130 104 L112 132 M112 132 L84 148" />
+      <path class="person" d="M128 96 L150 88" />
+      ${arrowLine(178, 102, 226, 92)}
+    </svg>
+  `;
+}
+
+function rowDiagram(type) {
+  const overhead = type === "face";
+  return `
+    <svg class="machineDiagram" viewBox="0 0 280 170" role="img">
+      ${diagramStyles()}
+      <path class="machine" d="M34 148 H242 M64 148 V92 H116 M116 92 V148 M210 148 V28 M210 28 H244 M210 52 L244 70 M244 28 V148" />
+      <path class="pad" d="M82 104 H128 V118 H82 Z M130 76 H146 V126 H130 Z" />
+      <circle class="person" cx="108" cy="66" r="12" />
+      <path class="person" d="M108 78 L120 102 L140 104 M120 104 L98 132 M98 132 L70 148 M122 104 L144 132 M144 132 L168 148" />
+      <path class="person" d="${overhead ? "M121 86 L160 70 L198 52" : "M122 90 L162 88 L198 84"}" />
+      <path class="machine" d="${overhead ? "M198 52 L222 42" : "M198 84 L222 80"}" />
+      <circle class="handle" cx="198" cy="${overhead ? "52" : "84"}" r="5" />
+      ${overhead ? arrowLine(198, 52, 154, 68) : arrowLine(196, 84, 150, 88)}
+    </svg>
+  `;
+}
+
+function cableDiagram(type) {
+  const high = ["face", "pressdown", "crunch"].includes(type);
+  const low = ["curl", "hinge", "lunge", "raise"].includes(type);
+  const pulleyY = high ? 44 : low ? 128 : 82;
+  const handleY = type === "pressdown" ? 88 : type === "curl" ? 100 : type === "raise" ? 70 : type === "hinge" ? 118 : type === "face" ? 58 : 82;
+  const personX = type === "hinge" ? 126 : 142;
+  const arrow = type === "pressdown"
+    ? arrowDown(152, 72, 152, 112)
+    : type === "curl"
+      ? arrowLine(146, 112, 146, 72)
+      : type === "raise"
+        ? arrowLine(144, 96, 124, 54)
+        : type === "hinge"
+          ? arrowLine(132, 104, 104, 128)
+          : type === "rotate"
+            ? curvedArrow()
+            : arrowLine(192, handleY, 150, handleY);
+  return `
+    <svg class="machineDiagram" viewBox="0 0 280 170" role="img">
+      ${diagramStyles()}
+      <path class="machine" d="M38 148 H242 M58 148 V24 H92 V148 M58 44 H92 M58 84 H92 M58 124 H92 M92 ${pulleyY} L196 ${handleY}" />
+      <circle class="handle" cx="196" cy="${handleY}" r="5" />
+      <circle class="person" cx="${personX}" cy="54" r="12" />
+      <path class="person" d="M${personX} 66 L${personX} 100 L${personX - 22} 148 M${personX} 100 L${personX + 22} 148" />
+      <path class="person" d="${cableArmPath(type, personX, handleY)}" />
+      ${arrow}
+    </svg>
+  `;
+}
+
+function diagramStyles() {
+  return `
+    <style>
+      .machine{fill:none;stroke:#9da6aa;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+      .person{fill:none;stroke:#6f777b;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+      .pad{fill:#f6f7f7;stroke:#9da6aa;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+      .handle{fill:#6f777b;stroke:#6f777b;stroke-width:3}
+      .arrow{fill:none;stroke:#73a82c;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+    </style>
+  `;
+}
+
+function cableArmPath(type, x, y) {
+  if (type === "pressdown") return `M${x} 78 L${x + 12} ${y - 4} L196 ${y}`;
+  if (type === "curl") return `M${x} 88 L${x + 16} ${y} L196 ${y}`;
+  if (type === "raise") return `M${x} 82 L${x - 8} ${y} L196 ${y}`;
+  if (type === "hinge") return `M${x} 92 L${x + 24} ${y} L196 ${y}`;
+  return `M${x} 82 L${x + 26} ${y} L196 ${y}`;
+}
+
+function arrowLine(x1, y1, x2, y2) {
+  return `<path class="arrow" d="M${x1} ${y1} L${x2} ${y2}" />${arrowHead(x1, y1, x2, y2)}`;
+}
+
+function arrowDown(x1, y1, x2, y2) {
+  return `<path class="arrow" d="M${x1} ${y1} L${x2} ${y2} M${x2 - 9} ${y2 - 11} L${x2} ${y2} L${x2 + 9} ${y2 - 11}" />`;
+}
+
+function curvedArrow() {
+  return `<path class="arrow" d="M126 72 C154 44 186 48 204 78 M192 68 L204 78 L190 84" />`;
+}
+
+function arrowHead(x1, y1, x2, y2) {
+  const angle = Math.atan2(y2 - y1, x2 - x1);
+  const left = angle + Math.PI * 0.82;
+  const right = angle - Math.PI * 0.82;
+  const size = 12;
+  const lx = x2 + Math.cos(left) * size;
+  const ly = y2 + Math.sin(left) * size;
+  const rx = x2 + Math.cos(right) * size;
+  const ry = y2 + Math.sin(right) * size;
+  return `<path class="arrow" d="M${lx.toFixed(1)} ${ly.toFixed(1)} L${x2} ${y2} L${rx.toFixed(1)} ${ry.toFixed(1)}" />`;
 }
 
 document.addEventListener("click", (event) => {
