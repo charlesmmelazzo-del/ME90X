@@ -7,6 +7,7 @@ const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Frid
 let state = loadState();
 let workoutData = loadWorkoutData();
 let selectedDay = new Date().getDay();
+let currentExerciseIndex = 0;
 
 const $ = (id) => document.getElementById(id);
 
@@ -287,8 +288,11 @@ function renderToday() {
   $("workoutIntent").textContent = plainWorkoutIntro(workout);
 
   const exercises = normalizeExercises(workout);
+  currentExerciseIndex = Math.min(currentExerciseIndex, exercises.length - 1);
   $("exerciseList").innerHTML = exercises.map((exercise, index) => renderExercise(exercise, index, workout)).join("");
   renderWorkoutProgress(workout, exercises);
+  renderSetDock(workout, exercises);
+  requestAnimationFrame(() => scrollToCurrentExercise(false));
 
   $("progressionAdvice").textContent = buildProgressionAdvice(workout, phase);
   $("loadLog").innerHTML = exercises.map((exercise) => {
@@ -306,15 +310,15 @@ function renderExercise(exercise, index, workout) {
   const loadEntry = state.loads[exercise.name];
   const suggested = suggestedLoad(exercise.name);
   const actual = loadEntry?.last || "";
-  const setButtons = Array.from({ length: totalSets }, (_, setIndex) => {
-    const checked = isSetDone(workout, exercise, setIndex);
-    return `<button type="button" class="setButton ${checked ? "done" : ""}" data-set="${setIndex}" data-exercise="${escapeAttr(exercise.name)}">
-      Set ${setIndex + 1}
-    </button>`;
-  }).join("");
+  const totalWorkoutSets = normalizeExercises(workout).reduce((sum, item) => sum + setCount(item.sets), 0);
+  const completeWorkoutSets = normalizeExercises(workout).reduce((sum, item) => sum + countCompleteSets(workout, item), 0);
 
   return `
-    <article class="exercise">
+    <article class="exercise" data-exercise-card="${index}">
+      <div class="cardProgress">
+        <span>${completeWorkoutSets} of ${totalWorkoutSets} sets done today</span>
+        <div><span style="width: ${totalWorkoutSets ? (completeWorkoutSets / totalWorkoutSets) * 100 : 0}%"></span></div>
+      </div>
       <div class="exerciseHeader">
         <span class="exerciseNumber">${index + 1}</span>
         <div>
@@ -349,10 +353,7 @@ function renderExercise(exercise, index, workout) {
           <input inputmode="decimal" data-load="${escapeAttr(exercise.name)}" value="${escapeAttr(actual)}" placeholder="Example: 60 lb or pin 6" />
         </label>
       </div>
-      <div class="setTracker">
-        <div><strong>${completeSets}/${totalSets} sets done</strong><span>${exercise.reps} reps per set</span></div>
-        <div class="setButtons">${setButtons}</div>
-      </div>
+      <p class="cardHint">${completeSets}/${totalSets} sets done here. Use the bottom set buttons while you work.</p>
     </article>
   `;
 }
@@ -450,6 +451,42 @@ function renderWorkoutProgress(workout, exercises) {
   $("setProgressBar").style.width = `${total ? (done / total) * 100 : 0}%`;
 }
 
+function renderSetDock(workout, exercises) {
+  const exercise = exercises[currentExerciseIndex] || exercises[0];
+  if (!exercise) return;
+  const totalSets = setCount(exercise.sets);
+  const completeSets = countCompleteSets(workout, exercise);
+  const setButtons = Array.from({ length: totalSets }, (_, setIndex) => {
+    const checked = isSetDone(workout, exercise, setIndex);
+    return `<button type="button" class="setButton ${checked ? "done" : ""}" data-set="${setIndex}" data-exercise="${escapeAttr(exercise.name)}">
+      Set ${setIndex + 1}
+    </button>`;
+  }).join("");
+
+  $("setDock").innerHTML = `
+    <div class="dockExercise">
+      <span>Exercise ${currentExerciseIndex + 1} of ${exercises.length}</span>
+      <strong>${plainName(exercise.name)}</strong>
+      <small>${completeSets}/${totalSets} sets done - ${exercise.reps} reps per set</small>
+    </div>
+    <div class="dockSets">${setButtons}</div>
+    <div class="dockActions">
+      <button type="button" class="ghost dockNav" data-card-nav="prev">Prev</button>
+      <button type="button" class="ghost dockNav" data-card-nav="next">Next</button>
+      <label class="readiness">
+        <span>Felt</span>
+        <select id="readiness">
+          <option value="good">Good</option>
+          <option value="easy">Too easy</option>
+          <option value="hard">Too hard</option>
+        </select>
+      </label>
+      <button id="completeWorkout" type="button" class="primary">Complete</button>
+    </div>
+  `;
+  $("completeWorkout").addEventListener("click", markComplete);
+}
+
 function buildProgressionAdvice(workout, phase) {
   const cues = {
     strength: "If an exercise feels good for two workouts in a row, go up one small step next time. For leg press that might be 10-20 lb. For cables or upper-body machines, 5-10 lb is plenty.",
@@ -533,7 +570,7 @@ function markComplete() {
   state.completions[date] = {
     workoutId: workout.id,
     workoutName: workout.name,
-    readiness: $("readiness").value,
+    readiness: $("readiness")?.value || "good",
     completedAt: new Date().toISOString()
   };
   updateLoads(workout);
@@ -542,7 +579,7 @@ function markComplete() {
 }
 
 function updateLoads(workout) {
-  const felt = $("readiness").value;
+  const felt = $("readiness")?.value || "good";
   document.querySelectorAll("[data-load]").forEach((input) => {
     const name = input.dataset.load;
     const value = input.value.trim();
@@ -567,6 +604,28 @@ function toggleSet(button) {
   state.setChecks[key] = !state.setChecks[key];
   saveState();
   renderToday();
+}
+
+function scrollToCurrentExercise(smooth = true) {
+  const card = document.querySelector(`[data-exercise-card="${currentExerciseIndex}"]`);
+  card?.scrollIntoView({ behavior: smooth ? "smooth" : "auto", inline: "center", block: "nearest" });
+}
+
+function updateCurrentCardFromScroll() {
+  const list = $("exerciseList");
+  if (!list) return;
+  const cards = [...list.querySelectorAll("[data-exercise-card]")];
+  if (!cards.length) return;
+  const closest = cards.reduce((best, card) => {
+    const distance = Math.abs(card.getBoundingClientRect().left - list.getBoundingClientRect().left);
+    return distance < best.distance ? { card, distance } : best;
+  }, { card: cards[0], distance: Infinity }).card;
+  const nextIndex = Number(closest.dataset.exerciseCard);
+  if (nextIndex !== currentExerciseIndex) {
+    currentExerciseIndex = nextIndex;
+    const workout = getWorkoutForDay(selectedDay);
+    renderSetDock(workout, normalizeExercises(workout));
+  }
 }
 
 function focusLabel(value) {
@@ -759,12 +818,22 @@ document.addEventListener("click", (event) => {
   const scheduleButton = event.target.closest("[data-schedule-day]");
   if (scheduleButton) {
     selectedDay = Number(scheduleButton.dataset.scheduleDay);
+    currentExerciseIndex = 0;
     render();
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   const setButton = event.target.closest("[data-set]");
   if (setButton) toggleSet(setButton);
+
+  const navButton = event.target.closest("[data-card-nav]");
+  if (navButton) {
+    const exercises = normalizeExercises(getWorkoutForDay(selectedDay));
+    currentExerciseIndex += navButton.dataset.cardNav === "next" ? 1 : -1;
+    currentExerciseIndex = Math.max(0, Math.min(exercises.length - 1, currentExerciseIndex));
+    scrollToCurrentExercise();
+    renderSetDock(getWorkoutForDay(selectedDay), exercises);
+  }
 
   const previewButton = event.target.closest("[data-preview]");
   if (previewButton) {
@@ -776,7 +845,10 @@ document.addEventListener("click", (event) => {
   }
 });
 
-$("completeWorkout").addEventListener("click", markComplete);
+$("exerciseList").addEventListener("scroll", () => {
+  window.clearTimeout(window.me90xScrollTimer);
+  window.me90xScrollTimer = window.setTimeout(updateCurrentCardFromScroll, 80);
+});
 $("libraryFilter")?.addEventListener("change", renderLibrary);
 $("notes")?.addEventListener("input", (event) => {
   state.notes = event.target.value;
