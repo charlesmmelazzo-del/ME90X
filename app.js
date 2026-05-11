@@ -127,6 +127,100 @@ const GUIDE_LIBRARY = [
   }
 ];
 
+const MACHINE_LIBRARY = [
+  {
+    match: ["leg press", "calf"],
+    name: "Leg press / calf machine",
+    setup: "Sit with your back flat on the back pad. Put both feet on the large platform. Use the handles beside the seat if the machine has them.",
+    adjust: "Move the seat or start position so your knees are bent but comfortable. You should not feel jammed at the bottom.",
+    station: "Use the big foot platform. For calf raises, keep only the balls of your feet on the lower part of the platform."
+  },
+  {
+    match: ["multi-press", "chest press", "speed press", "shoulder press"],
+    name: "Multi-press machine",
+    setup: "Sit with your back against the pad. Adjust the seat so the handles line up around mid-chest for chest press.",
+    adjust: "Before you add weight, do one easy test rep. If the handles feel too high in your shoulders, lower the seat. If they feel too low, raise it.",
+    station: "Use the main press handles. Keep your feet flat and your ribs down."
+  },
+  {
+    match: ["row station", "seated row"],
+    name: "Row / pull station",
+    setup: "Sit facing the handles. Put your feet on the foot bar or foot plate. If there is a chest pad, set it so your chest touches it lightly.",
+    adjust: "Adjust the seat so you can reach the handles with long arms without rounding your back.",
+    station: "Use the row handles. Start tall, then pull your elbows back."
+  },
+  {
+    match: ["lat pulldown", "pulldown"],
+    name: "Row / pull station",
+    setup: "Sit facing the machine with thighs under the pads if the machine has them. Reach up to the bar without shrugging.",
+    adjust: "Set the thigh pad snug enough that you do not lift off the seat when you pull.",
+    station: "Use the overhead bar or handles. Pull toward the top of your chest."
+  },
+  {
+    match: ["face pull"],
+    name: "Precor FTS Glide cable machine",
+    setup: "Stand facing the cable machine. Set both cable pulleys around face height if adjustable.",
+    adjust: "Attach the rope or two handles. Start light enough that you can pause with hands beside your face.",
+    station: "Use the cable handles. Step back until the cable is gently tight before you start."
+  },
+  {
+    match: ["pallof", "anti-rotation", "anti-twist"],
+    name: "Precor FTS Glide cable machine",
+    setup: "Stand sideways to one cable. Set the pulley around chest height.",
+    adjust: "Hold one handle with both hands at your chest. Step away until the cable tries to turn you.",
+    station: "Use one cable handle. Your job is to stay square and not twist."
+  },
+  {
+    match: ["wood chop", "chop", "rotational"],
+    name: "Precor FTS Glide cable machine",
+    setup: "Stand sideways to one cable. Set the pulley high for a downward chop or low for an upward chop.",
+    adjust: "Use one handle. Step far enough away that the cable has gentle tension at the start.",
+    station: "Turn your hips and chest together. Keep the motion smooth."
+  },
+  {
+    match: ["triceps", "pressdown"],
+    name: "Precor FTS Glide cable machine",
+    setup: "Stand facing the cable machine. Set the pulley high.",
+    adjust: "Use a rope, straight bar, or handle. Pick a light weight first so your elbows can stay still.",
+    station: "Keep elbows close to your ribs and push the handle down."
+  },
+  {
+    match: ["curl"],
+    name: "Precor FTS Glide cable machine",
+    setup: "Stand facing the cable machine. Set the pulley low.",
+    adjust: "Use a straight bar or two handles. Step back until the cable is lightly tight.",
+    station: "Keep elbows by your sides and curl the handle up."
+  },
+  {
+    match: ["lateral raise"],
+    name: "Precor FTS Glide cable machine",
+    setup: "Stand sideways to one low pulley. Hold the handle in the outside hand.",
+    adjust: "Start very light. The cable should pull across your body at the bottom.",
+    station: "Lift your arm out to the side without shrugging."
+  },
+  {
+    match: ["lunge", "split squat", "assisted squat"],
+    name: "Precor FTS Glide cable machine",
+    setup: "Stand facing the cable machine and hold the handles lightly for balance.",
+    adjust: "Set the pulleys low to mid-height. Use only enough weight to help you balance.",
+    station: "Use the handles like support rails, not like something to yank on."
+  },
+  {
+    match: ["romanian deadlift", "rdl", "hinge", "pull-through"],
+    name: "Precor FTS Glide cable machine",
+    setup: "Use a low cable. Stand facing away for pull-throughs, or facing the machine for cable deadlifts.",
+    adjust: "Step far enough away that the cable is tight before you move. Keep the first set light.",
+    station: "Move from your hips. Your back should stay quiet."
+  },
+  {
+    match: ["crunch", "dead bug", "march", "hold"],
+    name: "Precor FTS Glide cable machine",
+    setup: "Use the cable position that matches the move: high for crunches, chest-height for holds, low for dead bug pullovers.",
+    adjust: "Start with a light pin. You should feel your middle working, not your low back.",
+    station: "Keep the cable controlled the whole time."
+  }
+];
+
 function loadState() {
   const base = { completions: {}, setChecks: {}, loads: {}, notes: "", startDate: todayISO() };
   const saved = [STORAGE_KEY, ...LEGACY_STORAGE_KEYS].map((key) => localStorage.getItem(key)).find(Boolean);
@@ -206,6 +300,7 @@ function renderToday() {
 
 function renderExercise(exercise, index, workout) {
   const guide = getExerciseGuide(exercise.name);
+  const machine = getMachineGuide(exercise.name);
   const totalSets = setCount(exercise.sets);
   const completeSets = countCompleteSets(workout, exercise);
   const loadEntry = state.loads[exercise.name];
@@ -224,15 +319,24 @@ function renderExercise(exercise, index, workout) {
         <span class="exerciseNumber">${index + 1}</span>
         <div>
           <h3>${plainName(exercise.name)}</h3>
+          <span class="machineBadge">${machine.name}</span>
           <p>${totalSets} sets. Do ${exercise.reps} reps each set. ${plainEffort(exercise.effort)}</p>
         </div>
       </div>
       <div class="exerciseBody">
-        ${movementGuide(guide.type)}
-        <div class="instructionGrid">
-          <div><strong>Set up</strong><p>${guide.setup}</p></div>
-          <div><strong>Do this</strong><p>${guide.action}</p></div>
-          <div><strong>Watch out</strong><p>${guide.avoid}</p></div>
+        ${movementGuide(guide.type, machine.name)}
+        <div class="instructionStack">
+          <div class="machineSetup">
+            <strong>Machine setup</strong>
+            <p>${machine.setup}</p>
+            <p>${machine.adjust}</p>
+            <p>${machine.station}</p>
+          </div>
+          <div class="instructionGrid">
+            <div><strong>Set up your body</strong><p>${guide.setup}</p></div>
+            <div><strong>Do this</strong><p>${guide.action}</p></div>
+            <div><strong>Watch out</strong><p>${guide.avoid}</p></div>
+          </div>
         </div>
       </div>
       <div class="loadPanel">
@@ -292,6 +396,16 @@ function getExerciseGuide(name) {
     setup: "Stand tall, brace your middle, and choose a light starting weight.",
     action: "Move slowly through the full motion. Control the weight on the way back.",
     avoid: "Do not chase heavy weight if your body starts twisting, shrugging, or swinging."
+  };
+}
+
+function getMachineGuide(name) {
+  const lower = name.toLowerCase();
+  return MACHINE_LIBRARY.find((guide) => guide.match.some((term) => lower.includes(term))) || {
+    name: "Precor FTS Glide cable machine",
+    setup: "Use the cable machine unless this exercise clearly names another machine.",
+    adjust: "Choose the pulley height that makes the cable pull in the same direction as the movement.",
+    station: "Start light and step away until the cable is gently tight."
   };
 }
 
@@ -472,7 +586,7 @@ function escapeAttr(value = "") {
   return String(value).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 }
 
-function movementGuide(type) {
+function movementGuide(type, machineName) {
   const labels = {
     press: ["Sit tall", "Press forward"],
     row: ["Arms long", "Pull elbows back"],
@@ -490,6 +604,7 @@ function movementGuide(type) {
   const [start, finish] = labels[type] || labels.cable;
   return `
     <div class="movementGuide" aria-hidden="true">
+      <strong>${machineName}</strong>
       <svg viewBox="0 0 220 132" role="img">
         <line x1="22" y1="108" x2="198" y2="108"></line>
         <circle cx="58" cy="38" r="14"></circle>
