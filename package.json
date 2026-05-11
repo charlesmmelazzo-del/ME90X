@@ -1,0 +1,15 @@
+{
+  "name": "me90x",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A mobile-first 30-minute machine workout tracker.",
+  "scripts": {
+    "start": "serve -s . -l tcp://0.0.0.0:${PORT:-3000}"
+  },
+  "dependencies": {
+    "serve": "^14.2.4"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
