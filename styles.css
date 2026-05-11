@@ -330,6 +330,20 @@ main {
   text-transform: uppercase;
 }
 
+.machineBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  margin-bottom: 8px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: white;
+  font-size: 0.68rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
 .exercise p,
 .dashboardGrid p,
 .workoutCard p,
@@ -352,6 +366,14 @@ main {
   border: 1px solid var(--line);
   border-radius: 6px;
   background: white;
+}
+
+.movementGuide > strong {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 950;
+  line-height: 1.15;
+  text-transform: uppercase;
 }
 
 .movementGuide svg {
@@ -393,6 +415,11 @@ main {
   text-transform: uppercase;
 }
 
+.instructionStack {
+  display: grid;
+  gap: 10px;
+}
+
 .instructionGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -400,6 +427,7 @@ main {
 }
 
 .instructionGrid div,
+.machineSetup,
 .loadPanel,
 .setTracker {
   border: 1px solid var(--line);
@@ -409,6 +437,7 @@ main {
 }
 
 .instructionGrid strong,
+.machineSetup strong,
 .loadPanel strong,
 .setTracker strong {
   display: block;
@@ -419,8 +448,13 @@ main {
 }
 
 .instructionGrid p,
+.machineSetup p,
 .loadPanel p {
   margin-bottom: 0;
+}
+
+.machineSetup p + p {
+  margin-top: 8px;
 }
 
 .loadPanel {
@@ -807,6 +841,12 @@ textarea {
     font-size: 0.98rem;
   }
 
+  .machineBadge {
+    min-height: 24px;
+    margin-bottom: 6px;
+    font-size: 0.62rem;
+  }
+
   .exercise p {
     font-size: 0.95rem;
   }
@@ -834,6 +874,7 @@ textarea {
   }
 
   .instructionGrid div,
+  .machineSetup,
   .loadPanel,
   .setTracker {
     padding: 10px;
