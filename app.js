@@ -363,6 +363,10 @@ function renderStats() {
       <span>${day.slice(0, 3)}</span><strong>${workout.name}</strong><small>${done ? "Done" : "Start"}</small>
     </button>`;
   }).join("");
+  requestAnimationFrame(() => {
+    const activeDay = document.querySelector("[data-schedule-day].active");
+    activeDay?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  });
 }
 
 function renderLibrary() {
