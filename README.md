@@ -7,7 +7,7 @@ A static workout tracker for 30-minute machine workouts using:
 - Precor leg press/calf station
 - Precor row or pull station
 
-The app tracks daily completion streaks, weekly progress, workout notes, and machine loads in browser local storage.
+The app shows the assigned workout for each day, gives plain-English exercise instructions, provides simple movement diagrams, tracks set-by-set completion, and stores streaks, notes, and machine loads in browser local storage.
 
 ## Run locally
 
@@ -22,7 +22,7 @@ Open `index.html` in a browser, or serve the folder with any static web server.
 
 ## Updating workouts with ChatGPT
 
-Use the "Copy ChatGPT prompt" button in the app. Paste the returned JSON into "Swap In New Workouts" and import it.
+Use the hidden workout JSON tools if you want to swap in new ChatGPT-authored workouts later. New workouts should stay plain-English and keep each session around 30 minutes.
 
 ## Evidence basis
 
