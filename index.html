@@ -10,7 +10,7 @@
     <header class="topbar">
       <div class="brandLockup">
         <p class="eyebrow">Me90X</p>
-        <h1 id="todayTitle">Today's 30-minute workout</h1>
+        <h1 id="todayTitle">Pick today's workout</h1>
       </div>
       <div class="streakBox" aria-live="polite">
         <span id="streakCount">0</span>
@@ -19,13 +19,16 @@
     </header>
 
     <main>
-      <section class="heroBand">
-        <div class="todayPanel">
+      <section class="appShell">
+        <section class="schedulePanel" aria-labelledby="scheduleTitle">
           <div class="panelKicker">
-            <span>Train today</span>
-            <span>30-minute machine protocol</span>
+            <span id="scheduleTitle">This week</span>
+            <span>Aim for about 30 minutes</span>
           </div>
-          <div class="dayPicker" id="dayPicker" aria-label="Choose a day"></div>
+          <div id="weekSchedule" class="weekSchedule"></div>
+        </section>
+
+        <section class="todayPanel">
           <div class="sessionMeta">
             <span id="phaseBadge">Week 1</span>
             <span id="timeBadge">30 min</span>
@@ -33,14 +36,13 @@
           </div>
           <h2 id="workoutName">Loading...</h2>
           <p id="workoutIntent"></p>
-          <div class="timerRow">
-            <button id="startTimer" type="button">Start 30:00</button>
-            <output id="timerDisplay">30:00</output>
-            <button id="resetTimer" type="button" class="ghost">Reset</button>
+          <div class="workoutProgress">
+            <span id="setProgressText">0 of 0 sets done</span>
+            <div><span id="setProgressBar"></span></div>
           </div>
           <div id="exerciseList" class="exerciseList"></div>
           <div class="completeRow">
-            <button id="completeWorkout" type="button" class="primary">Mark complete</button>
+            <button id="completeWorkout" type="button" class="primary">Complete workout</button>
             <label class="readiness">
               <span>Session felt</span>
               <select id="readiness">
@@ -50,40 +52,44 @@
               </select>
             </label>
           </div>
-        </div>
-        <aside class="machineStrip" aria-label="Available gym machines">
-          <img src="assets/multi-press.jpeg" alt="Precor multi-press machine" />
-          <img src="assets/leg-press.jpeg" alt="Precor leg press machine" />
-          <img src="assets/row-station.jpeg" alt="Precor row or pull station" />
-        </aside>
+        </section>
       </section>
 
-      <section class="dashboardGrid">
-        <article>
-          <h2>Progression Coach</h2>
-          <p id="progressionAdvice"></p>
-          <div class="miniStats">
-            <div><strong id="weekNumber">1</strong><span>training week</span></div>
-            <div><strong id="completedThisWeek">0</strong><span>done this week</span></div>
-            <div><strong id="totalDone">0</strong><span>all-time sessions</span></div>
-          </div>
-        </article>
-        <article>
-          <h2>Load Log</h2>
-          <p>Track the weight pin or resistance setting you used. The app uses your last entry to suggest when to move up.</p>
-          <div id="loadLog" class="loadLog"></div>
-        </article>
-        <article>
-          <h2>Weekly Schedule</h2>
-          <div id="weekSchedule" class="weekSchedule"></div>
-        </article>
-        <article>
-          <h2>Coach Notes</h2>
-          <textarea id="notes" rows="7" placeholder="Knee felt good, chest press at 70 felt smooth, etc."></textarea>
-        </article>
-      </section>
+      <details class="coachDrawer">
+        <summary>More: progress, notes, and workout library</summary>
+        <section class="dashboardGrid">
+          <article>
+            <h2>Behind-the-scenes coach</h2>
+            <p id="progressionAdvice"></p>
+            <div class="miniStats">
+              <div><strong id="weekNumber">1</strong><span>training week</span></div>
+              <div><strong id="completedThisWeek">0</strong><span>done this week</span></div>
+              <div><strong id="totalDone">0</strong><span>all-time sessions</span></div>
+            </div>
+          </article>
+          <article>
+            <h2>Load Log</h2>
+            <p>The app quietly uses this to suggest when to move up.</p>
+            <div id="loadLog" class="loadLog"></div>
+          </article>
+          <article>
+            <h2>Coach Notes</h2>
+            <textarea id="notes" rows="7" placeholder="Knee felt good, chest press at 70 felt smooth, etc."></textarea>
+          </article>
+          <article>
+            <h2>Evidence Rules Used</h2>
+            <ul class="evidenceList">
+              <li>Train major muscle groups at least 2 days per week, with daily movement when recovery is good.</li>
+              <li>Use 2-3 work sets for most movements, with 6-12 reps for muscle and 8-12 reps for general strength.</li>
+              <li>Increase machine load after two good exposures with clean form.</li>
+              <li>Most sets should stop before ugly reps. You should usually feel like you had 1-2 good reps left.</li>
+              <li>Every fourth week backs off a little so your joints can catch up.</li>
+            </ul>
+          </article>
+        </section>
+      </details>
 
-      <section class="librarySection">
+      <section class="librarySection" hidden>
         <div class="sectionHead">
           <div>
             <p class="eyebrow">Rotation library</p>
@@ -101,7 +107,7 @@
         <div id="workoutLibrary" class="workoutLibrary"></div>
       </section>
 
-      <section class="dataSection">
+      <section class="dataSection" hidden>
         <article>
           <h2>Swap In New Workouts</h2>
           <p>
@@ -115,16 +121,6 @@
             <button id="copyPrompt" type="button" class="ghost">Copy ChatGPT prompt</button>
           </div>
           <p id="dataStatus" class="status"></p>
-        </article>
-        <article>
-          <h2>Evidence Rules Used</h2>
-          <ul class="evidenceList">
-            <li>Train major muscle groups at least 2 days per week, with daily movement when recovery is good.</li>
-            <li>Use 2-3 work sets for most movements, with 6-12 reps for muscle, 8-12 reps for general strength, and short circuits for conditioning.</li>
-            <li>Increase machine load 2-10% when you beat the rep target by 1-2 reps for two exposures with clean form.</li>
-            <li>Keep 1-3 reps in reserve on most sets; save true failure for rare final sets.</li>
-            <li>Every fourth week trims volume so your joints can catch up while your streak continues.</li>
-          </ul>
         </article>
       </section>
     </main>
