@@ -20,6 +20,18 @@ Open `index.html` in a browser, or serve the folder with any static web server.
 3. In GitHub, open Settings -> Pages.
 4. Deploy from the main branch root.
 
+## Railway
+
+This repo includes `package.json` and `railway.toml` so Railway has an explicit start command for the static app.
+
+In Railway, make sure the service is connected to:
+
+- Repository: `charlesmmelazzo-del/ME90X`
+- Branch: `main`
+- Root directory: repo root, usually blank or `/`
+
+If Railway does not auto-deploy after a GitHub update, open the Railway command palette and run "Deploy Latest Commit".
+
 ## Updating workouts with ChatGPT
 
 Use the hidden workout JSON tools if you want to swap in new ChatGPT-authored workouts later. New workouts should stay plain-English and keep each session around 30 minutes.
