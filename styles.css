@@ -25,6 +25,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+html,
+body {
+  overflow-x: hidden;
+}
+
 button,
 input,
 select,
@@ -161,6 +166,7 @@ main {
   border: 1px solid var(--line);
   border-radius: 6px;
   box-shadow: var(--shadow);
+  min-width: 0;
 }
 
 .schedulePanel,
@@ -305,6 +311,7 @@ main {
   border: 1px solid var(--line);
   border-radius: 6px;
   background: #fbfcfe;
+  min-width: 0;
 }
 
 .exerciseHeader {
@@ -366,6 +373,8 @@ main {
   border: 1px solid var(--line);
   border-radius: 6px;
   background: white;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .movementGuide > strong {
@@ -377,33 +386,55 @@ main {
 }
 
 .movementGuide svg {
+  display: block;
   width: 100%;
   height: auto;
+  min-width: 0;
 }
 
-.movementGuide line,
-.movementGuide path {
+.movementGuide .machine,
+.movementGuide .person,
+.movementGuide .pad {
   fill: none;
-  stroke: var(--ink);
-  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.movementGuide .machine {
+  stroke: #9da6aa;
+  stroke-width: 3.5;
+}
+
+.movementGuide .person {
+  stroke: #6f777b;
+  stroke-width: 4;
+}
+
+.movementGuide .pad {
+  fill: #f6f7f7;
+  stroke: #9da6aa;
+  stroke-width: 3;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .movementGuide circle {
   fill: white;
-  stroke: var(--ink);
-  stroke-width: 6;
+  stroke: #6f777b;
+  stroke-width: 4;
 }
 
 .movementGuide .handle {
-  fill: var(--accent);
-  stroke: var(--accent);
+  fill: #6f777b;
+  stroke: #6f777b;
 }
 
 .movementGuide .arrow {
-  stroke: var(--accent);
+  fill: none;
+  stroke: #73a82c;
   stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .movementGuide div {
@@ -865,7 +896,8 @@ textarea {
   }
 
   .movementGuide svg {
-    max-height: 124px;
+    height: 132px;
+    max-height: none;
   }
 
   .instructionGrid {
