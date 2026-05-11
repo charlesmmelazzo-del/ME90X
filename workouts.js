@@ -166,7 +166,7 @@ window.DEFAULT_WORKOUT_DATA = {
       format: "15-minute alternating block, then 10-minute accessory block.",
       exercises: [
         ["Multi-press chest press", "5", "8", "2 RIR", "Alternate with rows."],
-        ["Row station", "5", "8", "2 RIR", "Start each minute if using a timer."],
+        ["Row station", "5", "8", "2 RIR", "Alternate with chest press and keep moving steadily."],
         ["FTS lateral raise", "3", "12", "2 RIR", "Light and strict."],
         ["FTS straight-arm pulldown", "3", "12", "2 RIR", "Feel lats, not low back."],
         ["FTS curl to pressdown superset", "2", "10 each", "2 RIR", "Move briskly."],
