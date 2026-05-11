@@ -1,7 +1,7 @@
 :root {
   color-scheme: light;
   --ink: #0b0c0e;
-  --muted: #6b7078;
+  --muted: #66707a;
   --line: #d9dde3;
   --paper: #f4f5f7;
   --surface: #ffffff;
@@ -10,7 +10,7 @@
   --accent-dark: #c51f17;
   --volt: #c7ff2e;
   --steel: #e9edf2;
-  --shadow: 0 22px 60px rgba(11, 12, 14, 0.14);
+  --shadow: 0 22px 60px rgba(11, 12, 14, 0.12);
 }
 
 * {
@@ -20,9 +20,7 @@
 body {
   margin: 0;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background:
-    linear-gradient(135deg, rgba(255, 59, 48, 0.08), transparent 28%),
-    linear-gradient(180deg, #f8f9fb 0%, var(--paper) 100%);
+  background: linear-gradient(180deg, #f8f9fb 0%, var(--paper) 100%);
   color: var(--ink);
 }
 
@@ -58,7 +56,7 @@ button.ghost,
 }
 
 button.primary {
-  min-width: 178px;
+  min-width: 190px;
   background: var(--accent);
   border-color: var(--accent);
 }
@@ -102,7 +100,7 @@ p {
 
 h1 {
   margin-bottom: 0;
-  font-size: clamp(1.65rem, 4vw, 3rem);
+  font-size: clamp(1.55rem, 4vw, 3rem);
   font-weight: 950;
   letter-spacing: 0;
   line-height: 0.98;
@@ -110,7 +108,7 @@ h1 {
 }
 
 h2 {
-  font-size: 1.15rem;
+  font-size: 1.3rem;
   line-height: 1.1;
   text-transform: uppercase;
 }
@@ -141,28 +139,34 @@ h2 {
 }
 
 main {
+  max-width: 1180px;
+  margin: 0 auto;
   padding: clamp(16px, 3vw, 34px);
 }
 
-.heroBand {
+.appShell {
   display: grid;
-  grid-template-columns: minmax(0, 1.22fr) minmax(260px, 0.78fr);
   gap: 18px;
-  align-items: stretch;
 }
 
+.schedulePanel,
 .todayPanel,
 .dashboardGrid article,
 .librarySection,
-.dataSection article {
+.dataSection article,
+.coachDrawer {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 6px;
   box-shadow: var(--shadow);
 }
 
+.schedulePanel,
 .todayPanel {
   padding: clamp(16px, 3vw, 30px);
+}
+
+.todayPanel {
   border-top: 6px solid var(--ink);
 }
 
@@ -181,25 +185,49 @@ main {
   color: var(--accent);
 }
 
-.dayPicker {
+.weekSchedule {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
-  margin-bottom: 18px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
 }
 
-.dayPicker button {
-  padding: 0 8px;
-  min-width: 0;
-  background: var(--steel);
+.weekSchedule button {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  min-height: 118px;
+  text-align: left;
+  background: #f0f2f5;
   color: var(--ink);
   border-color: transparent;
+  padding: 12px;
 }
 
-.dayPicker button.active,
 .weekSchedule button.active {
   background: var(--ink);
   color: white;
+}
+
+.weekSchedule button.done {
+  border-color: var(--accent);
+  box-shadow: inset 0 -5px 0 var(--accent);
+}
+
+.weekSchedule span,
+.weekSchedule small {
+  color: var(--muted);
+  text-transform: uppercase;
+  font-weight: 900;
+  font-size: 0.72rem;
+}
+
+.weekSchedule button.active span,
+.weekSchedule button.active small {
+  color: var(--volt);
+}
+
+.weekSchedule strong {
+  line-height: 1.08;
 }
 
 .sessionMeta {
@@ -228,52 +256,64 @@ main {
   background: var(--accent);
 }
 
-.timerRow,
-.completeRow,
-.dataButtons,
-.sectionHead {
-  display: flex;
-  flex-wrap: wrap;
+#workoutIntent {
+  max-width: 760px;
+  color: var(--muted);
+  line-height: 1.45;
+  font-size: 1.02rem;
+}
+
+.workoutProgress {
+  display: grid;
+  grid-template-columns: max-content minmax(120px, 1fr);
   align-items: center;
   gap: 12px;
-}
-
-.timerRow {
   margin: 18px 0;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 0.78rem;
 }
 
-#timerDisplay {
-  min-width: 96px;
-  font-size: 1.75rem;
-  font-weight: 950;
-  font-variant-numeric: tabular-nums;
+.workoutProgress div {
+  height: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--steel);
+}
+
+.workoutProgress span span,
+#setProgressBar {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+  border-radius: inherit;
+  transition: width 180ms ease;
 }
 
 .exerciseList {
   display: grid;
-  gap: 9px;
+  gap: 14px;
 }
 
 .exercise {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(132px, 0.2fr);
-  gap: 12px;
-  align-items: center;
-  padding: 12px;
+  gap: 14px;
+  padding: 16px;
   border: 1px solid var(--line);
-  border-radius: 4px;
+  border-radius: 6px;
   background: #fbfcfe;
 }
 
-.exerciseMain {
+.exerciseHeader {
   display: flex;
   gap: 12px;
 }
 
 .exerciseNumber {
-  flex: 0 0 34px;
-  width: 34px;
-  height: 34px;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
   display: grid;
   place-items: center;
   border-radius: 4px;
@@ -284,7 +324,7 @@ main {
 
 .exercise h3 {
   margin-bottom: 4px;
-  font-size: 1rem;
+  font-size: 1.05rem;
   text-transform: uppercase;
 }
 
@@ -296,7 +336,99 @@ main {
   line-height: 1.45;
 }
 
-.exercise label,
+.exerciseBody {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+.movementGuide {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: white;
+}
+
+.movementGuide svg {
+  width: 100%;
+  height: auto;
+}
+
+.movementGuide line,
+.movementGuide path {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.movementGuide circle {
+  fill: white;
+  stroke: var(--ink);
+  stroke-width: 6;
+}
+
+.movementGuide .handle {
+  fill: var(--accent);
+  stroke: var(--accent);
+}
+
+.movementGuide .arrow {
+  stroke: var(--accent);
+  stroke-width: 5;
+}
+
+.movementGuide div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.instructionGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.instructionGrid div,
+.loadPanel,
+.setTracker {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: white;
+  padding: 12px;
+}
+
+.instructionGrid strong,
+.loadPanel strong,
+.setTracker strong {
+  display: block;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  font-weight: 950;
+}
+
+.instructionGrid p,
+.loadPanel p {
+  margin-bottom: 0;
+}
+
+.loadPanel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 0.45fr);
+  gap: 12px;
+  align-items: end;
+}
+
+.loadPanel label,
 .readiness {
   display: grid;
   gap: 6px;
@@ -328,24 +460,56 @@ textarea {
   resize: vertical;
 }
 
-.completeRow {
-  margin-top: 16px;
-  justify-content: space-between;
-}
-
-.machineStrip {
+.setTracker {
   display: grid;
-  gap: 10px;
+  grid-template-columns: minmax(160px, 0.24fr) minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
 }
 
-.machineStrip img {
-  width: 100%;
-  height: 184px;
-  object-fit: cover;
-  border-radius: 4px;
-  border: 1px solid #191c20;
-  box-shadow: var(--shadow);
-  filter: saturate(0.75) contrast(1.08);
+.setTracker span {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.setButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.setButton {
+  background: var(--steel);
+  border-color: transparent;
+  color: var(--ink);
+  min-width: 90px;
+}
+
+.setButton.done {
+  background: var(--volt);
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.completeRow {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.coachDrawer {
+  margin-top: 18px;
+  padding: 0;
+}
+
+.coachDrawer summary {
+  cursor: pointer;
+  padding: 16px 18px;
+  font-weight: 950;
+  text-transform: uppercase;
 }
 
 .dashboardGrid,
@@ -353,12 +517,13 @@ textarea {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
-  margin-top: 22px;
+  padding: 0 18px 18px;
 }
 
 .dashboardGrid article,
 .dataSection article {
   padding: 18px;
+  box-shadow: none;
 }
 
 .dashboardGrid article:first-child {
@@ -421,39 +586,21 @@ textarea {
   overflow: auto;
 }
 
-.weekSchedule {
-  display: grid;
-  gap: 8px;
-}
-
-.weekSchedule button {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  text-align: left;
-  background: #f0f2f5;
-  color: var(--ink);
-  border-color: var(--line);
-  height: auto;
-  padding: 10px 12px;
-}
-
-.weekSchedule button.done {
-  border-color: var(--accent);
-  box-shadow: inset 4px 0 0 var(--accent);
-}
-
-.weekSchedule span {
-  color: var(--muted);
-}
-
 .librarySection {
   margin-top: 22px;
   padding: 18px;
 }
 
-.sectionHead {
+.sectionHead,
+.dataButtons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
   justify-content: space-between;
+}
+
+.sectionHead {
   margin-bottom: 16px;
 }
 
@@ -498,18 +645,28 @@ textarea {
 }
 
 @media (max-width: 980px) {
-  .heroBand,
+  .weekSchedule {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .weekSchedule button {
+    min-height: 92px;
+  }
+
+  .exerciseBody,
+  .loadPanel,
+  .setTracker,
   .dashboardGrid,
   .dataSection {
     grid-template-columns: 1fr;
   }
 
-  .machineStrip {
-    grid-template-columns: repeat(3, 1fr);
+  .movementGuide {
+    max-width: 320px;
   }
 
-  .machineStrip img {
-    height: 150px;
+  .instructionGrid {
+    grid-template-columns: 1fr;
   }
 
   .workoutLibrary {
@@ -527,18 +684,20 @@ textarea {
     min-height: 74px;
   }
 
-  .dayPicker {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  .exercise,
-  .miniStats,
-  .machineStrip,
-  .workoutLibrary {
+  .weekSchedule {
     grid-template-columns: 1fr;
   }
 
-  .machineStrip img {
-    height: 190px;
+  .weekSchedule button {
+    min-height: auto;
+  }
+
+  .workoutProgress {
+    grid-template-columns: 1fr;
+  }
+
+  .miniStats,
+  .workoutLibrary {
+    grid-template-columns: 1fr;
   }
 }
